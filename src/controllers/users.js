@@ -15,6 +15,7 @@ function create(req, res, next){
 
   userModel.create(req.body.username, req.body.password)
   .then(function(data){
+    console.log(data)
     return res.status(201).send({ data })
   })
   .catch(next)
