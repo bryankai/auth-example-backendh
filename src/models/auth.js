@@ -17,8 +17,23 @@ const userModel = require('./users')
 // 5. "return/continue" promise
 //////////////////////////////////////////////////////////////////////////////
 
-function login(username, password){
-
+function login(username, password) {
+  let user
+  return userModel.getOneByUserName(username)
+    .then(function(data) {
+      if (!data) throw ({status: 400, message: 'Bad Request'})
+      user = data
+      return bcrypt.compare(password, data.password)
+    })
+    .catch(bcrypt.MISMATCH_ERROR, function() {
+      throw ({status: 400, message: 'Unauthorized'})
+    })
+    .then(function() {
+      // 4. strip hashed password away from object
+      delete user.password
+      // 5. "return/continue" promise
+      return user
+    })
 }
 
 module.exports = {
